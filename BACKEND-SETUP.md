@@ -28,6 +28,8 @@ Create `.env.local`:
 VITE_API_URL=http://localhost:5000
 ```
 
+For deployment, set `VITE_API_URL` in the frontend host's build environment to the backend's public origin (for example, `https://api.example.com`), then rebuild and redeploy the frontend. On the backend, set `CLIENT_ORIGIN` to the frontend's public origin so cross-origin API requests are allowed.
+
 ## 3. Start the backend
 
 Open a PowerShell terminal:

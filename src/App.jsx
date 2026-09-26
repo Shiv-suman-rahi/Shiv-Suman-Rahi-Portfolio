@@ -21,6 +21,7 @@ import {
   FiX,
 } from 'react-icons/fi';
 import { SiLeetcode } from 'react-icons/si';
+import { apiUrl, parseApiResponse, resolveApiUrl } from './api';
 import { portfolioData as defaultPortfolioData } from './data/portfolioData';
 import { AdminPanel } from './components/AdminPanel';
 import './App.css';
@@ -94,7 +95,7 @@ function Navbar({ activeSection, darkMode, onToggleTheme, onOpenAdmin, portfolio
           {darkMode ? <FiSun /> : <FiMoon />}
         </button>
 
-        <a className="nav-cta" href={portfolio.resumeUrl || '#resume'} onClick={closeMenu}>
+        <a className="nav-cta" href={resolveApiUrl(portfolio.resumeUrl) || '#resume'} onClick={closeMenu}>
           Download Resume <FiArrowRight />
         </a>
 
@@ -136,7 +137,7 @@ function Hero({ portfolio }) {
             <a className="button button-primary" href="#projects">
               View My Projects <FiArrowRight />
             </a>
-            <a className="button button-secondary" href={portfolio.resumeUrl || '#resume'}>
+            <a className="button button-secondary" href={resolveApiUrl(portfolio.resumeUrl) || '#resume'}>
               <FiDownload /> Download Resume
             </a>
           </div>
@@ -513,7 +514,7 @@ function ResumeSection({ portfolio }) {
         <p>
           View or download my complete resume for a detailed overview of my education, skills, projects, training and experience.
         </p>
-        <a className="button button-primary" href={portfolio.resumeUrl || '#contact'}>
+        <a className="button button-primary" href={resolveApiUrl(portfolio.resumeUrl) || '#contact'}>
           <FiDownload /> Download Resume
         </a>
       </div>
@@ -550,7 +551,7 @@ function Contact({ portfolio }) {
     setMessage('Sending your message...');
 
     try {
-      const response = await fetch('/api/contact', {
+      const response = await fetch(apiUrl('/api/contact'), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -558,7 +559,7 @@ function Contact({ portfolio }) {
         body: JSON.stringify({ name, email, message: text }),
       });
 
-      const data = await response.json().catch(() => ({}));
+      const data = await parseApiResponse(response);
 
       if (!response.ok) {
         throw new Error(data.message || 'Unable to send your message right now.');
@@ -593,7 +594,7 @@ function Contact({ portfolio }) {
             <a href={portfolio.socialLinks[2]?.url || '#contact'}>
               <SiLeetcode /> LeetCode
             </a>
-            <a href={portfolio.resumeUrl || '#resume'}>
+            <a href={resolveApiUrl(portfolio.resumeUrl) || '#resume'}>
               <FiMail /> Email
             </a>
           </div>
@@ -639,7 +640,7 @@ function Footer({ portfolio }) {
         <a href={portfolio.socialLinks[0]?.url || '#contact'} target="_blank" rel="noreferrer">GitHub</a>
         <a href={portfolio.socialLinks[1]?.url || '#contact'}>LinkedIn</a>
         <a href={portfolio.socialLinks[2]?.url || '#contact'}>LeetCode</a>
-        <a href={portfolio.resumeUrl || '#resume'}>Email</a>
+        <a href={resolveApiUrl(portfolio.resumeUrl) || '#resume'}>Email</a>
       </div>
       <p>© 2026 {portfolio.name}. All rights reserved.</p>
     </footer>
@@ -655,8 +656,8 @@ function App() {
   useEffect(() => {
     const controller = new AbortController();
 
-    fetch('/api/admin/portfolio', { signal: controller.signal })
-      .then((response) => response.ok ? response.json() : Promise.reject(new Error('Unable to load content')))
+    fetch(apiUrl('/api/admin/portfolio'), { signal: controller.signal })
+      .then((response) => response.ok ? parseApiResponse(response) : Promise.reject(new Error('Unable to load content')))
       .then((data) => {
         if (data?.data) {
           setPortfolio(normalizePortfolio(data.data));

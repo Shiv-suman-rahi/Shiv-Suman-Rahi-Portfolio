@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { apiUrl, parseApiResponse } from '../api';
 //kya bhai
 const cloneData = (source) => ({
   ...source,
@@ -126,13 +127,13 @@ export function AdminPanel({ portfolio, setPortfolio, onClose }) {
     event.preventDefault();
 
     try {
-      const response = await fetch('/api/admin/login', {
+      const response = await fetch(apiUrl('/api/admin/login'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ password }),
       });
 
-      const data = await response.json();
+      const data = await parseApiResponse(response);
 
       if (!response.ok) {
         throw new Error(data.message || 'Login failed.');
@@ -149,13 +150,13 @@ export function AdminPanel({ portfolio, setPortfolio, onClose }) {
   const handleSave = async () => {
     try {
       setIsSaving(true);
-      const response = await fetch('/api/admin/portfolio', {
+      const response = await fetch(apiUrl('/api/admin/portfolio'), {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ password, data: draft }),
       });
 
-      const data = await response.json();
+      const data = await parseApiResponse(response);
 
       if (!response.ok) {
         throw new Error(data.message || 'Unable to save portfolio data.');
@@ -179,7 +180,7 @@ export function AdminPanel({ portfolio, setPortfolio, onClose }) {
 
     try {
       setIsUploadingResume(true);
-      const response = await fetch('/api/admin/resume', {
+      const response = await fetch(apiUrl('/api/admin/resume'), {
         method: 'POST',
         headers: {
           'Content-Type': resumeFile.type || 'application/pdf',
@@ -187,15 +188,7 @@ export function AdminPanel({ portfolio, setPortfolio, onClose }) {
         },
         body: resumeFile,
       });
-      const contentType = response.headers.get('content-type') || '';
-      if (!contentType.includes('application/json')) {
-        if (response.status === 404) {
-          throw new Error('Resume upload endpoint is not loaded. Restart the backend with npm run server, then try again.');
-        }
-        throw new Error('The backend returned an unexpected response. Check that the API server is running.');
-      }
-
-      const data = await response.json();
+      const data = await parseApiResponse(response);
 
       if (!response.ok) {
         throw new Error(data.message || 'Unable to upload the resume.');
