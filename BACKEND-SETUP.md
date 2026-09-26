@@ -28,7 +28,7 @@ Create `.env.local`:
 VITE_API_URL=http://localhost:5000
 ```
 
-For Vercel deployment, this project exposes its Express API through `api/[...path].js`. In the Vercel project settings, configure `MONGODB_URI`, `ADMIN_PASSWORD`, and `CLIENT_ORIGIN` for the backend. Set the frontend build variable `VITE_API_URL` to the deployed site's origin, then redeploy so the URL is included in the frontend build. `CLIENT_ORIGIN` should match the deployed site origin.
+For Vercel deployment, this project exposes its Express API through explicit Node function files under `api/`, including the admin login, portfolio, and resume routes. In the Vercel project settings, configure `MONGODB_URI`, `ADMIN_PASSWORD`, and `CLIENT_ORIGIN` for the backend. Set the frontend build variable `VITE_API_URL` to the deployed site's origin, then redeploy so the URL is included in the frontend build. `CLIENT_ORIGIN` should match the deployed site origin.
 
 ## 3. Start the backend
 

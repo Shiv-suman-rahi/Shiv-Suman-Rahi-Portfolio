@@ -1,6 +1,6 @@
-import app, { connectDatabase } from '../server/server.js'
+import app, { connectDatabase } from './server.js'
 
-export default async function handler(req, res) {
+export default async function vercelHandler(req, res) {
   try {
     await connectDatabase()
     return app(req, res)
