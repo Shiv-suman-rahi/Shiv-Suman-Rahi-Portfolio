@@ -88,3 +88,5 @@ POST http://localhost:5000/api/contact
 ```
 
 The backend validates all fields before saving them.
+
+Resume PDFs (up to 10 MB) are stored in MongoDB and remain available across server restarts and redeploys. Uploading a replacement updates the existing resume record and publishes its download link automatically.

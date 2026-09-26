@@ -1,24 +1,30 @@
 import express from 'express'
-import { mkdir, rename, writeFile } from 'node:fs/promises'
-import { randomUUID } from 'node:crypto'
-import { dirname, join } from 'node:path'
-import { fileURLToPath } from 'node:url'
 import PortfolioContent from '../models/PortfolioContent.js'
+import ResumeFile from '../models/ResumeFile.js'
 import { portfolioData } from '../../src/data/portfolioData.js'
 
 const router = express.Router()
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'admin123'
-const resumePath = fileURLToPath(new URL('../uploads/resume.pdf', import.meta.url))
 
-router.get('/resume', (_req, res) => {
-  res.download(resumePath, 'resume.pdf', (error) => {
-    if (error && !res.headersSent) {
-      res.status(error.code === 'ENOENT' ? 404 : 500).json({
-        success: false,
-        message: error.code === 'ENOENT' ? 'No resume has been uploaded yet.' : 'Unable to download the resume.',
-      })
+router.get('/resume', async (_req, res) => {
+  try {
+    const resume = await ResumeFile.findById('current')
+
+    if (!resume) {
+      return res.status(404).json({ success: false, message: 'No resume has been uploaded yet.' })
     }
-  })
+
+    res.set({
+      'Content-Type': resume.contentType || 'application/pdf',
+      'Content-Disposition': 'attachment; filename="resume.pdf"',
+      'Content-Length': resume.data.length,
+      'Cache-Control': 'no-store',
+    })
+    return res.send(resume.data)
+  } catch (error) {
+    console.error('Resume download failed:', error)
+    return res.status(500).json({ success: false, message: 'Unable to download the resume.' })
+  }
 })
 
 router.post('/resume', express.raw({ type: ['application/pdf', 'application/octet-stream'], limit: '10mb' }), async (req, res) => {
@@ -30,12 +36,23 @@ router.post('/resume', express.raw({ type: ['application/pdf', 'application/octe
     return res.status(400).json({ success: false, message: 'Please upload a valid PDF file.' })
   }
 
-  const temporaryPath = join(dirname(resumePath), `resume-${randomUUID()}.tmp`)
-
   try {
-    await mkdir(dirname(resumePath), { recursive: true })
-    await writeFile(temporaryPath, req.body)
-    await rename(temporaryPath, resumePath)
+    await ResumeFile.findByIdAndUpdate(
+      'current',
+      { data: req.body, contentType: 'application/pdf' },
+      { new: true, upsert: true, setDefaultsOnInsert: true }
+    )
+
+    const portfolio = await PortfolioContent.findOne()
+    if (portfolio) {
+      portfolio.content = { ...portfolio.content, resumeUrl: '/api/admin/resume' }
+      portfolio.markModified('content')
+      await portfolio.save()
+    } else {
+      await PortfolioContent.create({
+        content: { ...getPortfolioSeed(), resumeUrl: '/api/admin/resume' },
+      })
+    }
 
     return res.json({ success: true, resumeUrl: '/api/admin/resume' })
   } catch (error) {

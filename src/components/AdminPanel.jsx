@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 
 const initialPassword = 'admin123';
 
@@ -35,10 +35,6 @@ export function AdminPanel({ portfolio, setPortfolio, onClose }) {
   const [resumeFile, setResumeFile] = useState(null);
   const [activeTab, setActiveTab] = useState('basic');
   const [draft, setDraft] = useState(() => cloneData(portfolio));
-
-  useEffect(() => {
-    setDraft(cloneData(portfolio));
-  }, [portfolio]);
 
   const passwordHint = useMemo(
     () => `Default password: ${initialPassword}. You can change it later by setting ADMIN_PASSWORD in the .env file.`,
@@ -171,6 +167,7 @@ export function AdminPanel({ portfolio, setPortfolio, onClose }) {
       }
 
       setPortfolio(data.data);
+      setDraft(cloneData(data.data));
       setStatus('Portfolio content saved successfully.');
     } catch (error) {
       setStatus(error.message || 'Unable to save the portfolio right now.');
@@ -210,8 +207,9 @@ export function AdminPanel({ portfolio, setPortfolio, onClose }) {
       }
 
       updateField('resumeUrl', data.resumeUrl);
+      setPortfolio((previous) => ({ ...previous, resumeUrl: data.resumeUrl }));
       setResumeFile(null);
-      setStatus('Resume uploaded successfully. Save portfolio data to publish the new download link.');
+      setStatus('Resume uploaded and published successfully.');
     } catch (error) {
       setStatus(error.message || 'Unable to upload the resume right now.');
     } finally {
