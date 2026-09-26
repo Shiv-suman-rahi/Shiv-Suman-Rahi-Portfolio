@@ -4,7 +4,7 @@ import ResumeFile from '../models/ResumeFile.js'
 import { portfolioData } from '../../src/data/portfolioData.js'
 
 const router = express.Router()
-const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'admin123'
+const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD
 
 router.get('/resume', async (_req, res) => {
   try {

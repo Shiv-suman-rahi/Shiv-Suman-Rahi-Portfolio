@@ -1,6 +1,8 @@
 import { useMemo, useState } from 'react';
+// import env from 'dotenv'
 
-const initialPassword = 'admin123';
+// env.config();
+const initialPassword = 'Shiv@6287';
 
 const cloneData = (source) => ({
   ...source,
@@ -37,7 +39,7 @@ export function AdminPanel({ portfolio, setPortfolio, onClose }) {
   const [draft, setDraft] = useState(() => cloneData(portfolio));
 
   const passwordHint = useMemo(
-    () => `Default password: ${initialPassword}. You can change it later by setting ADMIN_PASSWORD in the .env file.`,
+    () => `Only Admin Can Login Here .`,
     []
   );
 
