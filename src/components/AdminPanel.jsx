@@ -1,9 +1,5 @@
-import { useMemo, useState } from 'react';
-// import env from 'dotenv'
-
-// env.config();
-const initialPassword = 'Shiv@6287';
-
+import { useState } from 'react';
+//kya bhai
 const cloneData = (source) => ({
   ...source,
   hero: { ...(source.hero || {}) },
@@ -38,10 +34,7 @@ export function AdminPanel({ portfolio, setPortfolio, onClose }) {
   const [activeTab, setActiveTab] = useState('basic');
   const [draft, setDraft] = useState(() => cloneData(portfolio));
 
-  const passwordHint = useMemo(
-    () => `Only Admin Can Login Here .`,
-    []
-  );
+  const passwordHint = 'Only authorized admins can log in.';
 
   const updateField = (key, value) => {
     setDraft((previous) => ({ ...previous, [key]: value }));
