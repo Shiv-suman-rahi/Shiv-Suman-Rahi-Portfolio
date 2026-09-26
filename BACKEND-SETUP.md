@@ -28,7 +28,7 @@ Create `.env.local`:
 VITE_API_URL=http://localhost:5000
 ```
 
-For deployment, set `VITE_API_URL` in the frontend host's build environment to the backend's public origin (for example, `https://api.example.com`), then rebuild and redeploy the frontend. On the backend, set `CLIENT_ORIGIN` to the frontend's public origin so cross-origin API requests are allowed.
+For Vercel deployment, this project exposes its Express API through `api/[...path].js`. In the Vercel project settings, configure `MONGODB_URI`, `ADMIN_PASSWORD`, and `CLIENT_ORIGIN` for the backend. Set the frontend build variable `VITE_API_URL` to the deployed site's origin, then redeploy so the URL is included in the frontend build. `CLIENT_ORIGIN` should match the deployed site origin.
 
 ## 3. Start the backend
 

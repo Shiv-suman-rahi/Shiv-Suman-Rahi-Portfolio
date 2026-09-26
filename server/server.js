@@ -13,6 +13,7 @@ dns.setServers(['8.8.8.8', '1.1.1.1'])
 const app = express()
 
 const port = Number(process.env.PORT) || 5000
+let databaseConnection
 
 const allowedOrigins =
   process.env.CLIENT_ORIGIN
@@ -82,17 +83,34 @@ app.use((error, _req, res, _next) => {
 })
 
 // Start server
-export async function startServer() {
+export async function connectDatabase() {
   if (!process.env.MONGODB_URI) {
     throw new Error(
       'MONGODB_URI is required to start the server.'
     )
   }
 
-  try {
-    await mongoose.connect(process.env.MONGODB_URI)
+  if (mongoose.connection.readyState === 1) {
+    return
+  }
 
-    console.log('MongoDB connected successfully')
+  if (mongoose.connection.readyState !== 2) {
+    databaseConnection = mongoose.connect(process.env.MONGODB_URI)
+      .then(() => {
+        console.log('MongoDB connected successfully')
+      })
+      .catch((error) => {
+        databaseConnection = undefined
+        throw error
+      })
+  }
+
+  await databaseConnection
+}
+
+export async function startServer() {
+  try {
+    await connectDatabase()
 
     app.listen(port, () => {
       console.log(`Contact API listening on port ${port}`)
@@ -106,7 +124,7 @@ export async function startServer() {
 }
 
 // Start automatically
-if (process.env.NODE_ENV !== 'test') {
+if (process.env.NODE_ENV !== 'test' && !process.env.VERCEL) {
   startServer()
 }
 
