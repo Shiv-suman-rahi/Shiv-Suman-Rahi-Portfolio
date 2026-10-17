@@ -19,7 +19,13 @@ ADMIN_PASSWORD=<a long, unique password>
 CLIENT_ORIGIN=<the deployed frontend origin, without a trailing slash>
 ```
 
-For example, `CLIENT_ORIGIN` should be `https://your-portfolio.vercel.app`. If you use a custom domain, include that origin as well. Multiple allowed origins can be comma-separated. Optional email and WhatsApp notification variables are listed in `backend/.env.example`.
+`CLIENT_ORIGIN` is the frontend's origin (not the backend URL), for example
+`https://your-portfolio.vercel.app`. If you use a custom domain, include that
+origin too. Separate multiple origins with commas. The backend checks the
+browser's `Origin` header against this allowlist and handles CORS preflight
+requests. Localhost origins are allowed automatically when `CLIENT_ORIGIN` is
+not set. Optional email and WhatsApp notification variables are listed in
+`backend/.env.example`.
 
 After deployment, verify the API at `https://<backend-domain>/api/health`.
 
@@ -33,7 +39,10 @@ Add this frontend environment variable in Vercel:
 VITE_API_URL=https://<backend-domain>
 ```
 
-Use the backend's origin only, without a trailing slash or `/api`. This value is embedded during the frontend build, so redeploy the frontend after changing it. The Vercel rewrite in `frontend/vercel.json` serves the SPA for client-side routes.
+Set it to the backend's origin (not the frontend URL), without a trailing slash
+or `/api`. This value is embedded during the frontend build, so redeploy the
+frontend after changing it. The Vercel rewrite in `frontend/vercel.json` serves
+the SPA for client-side routes.
 
 ## Local development
 
