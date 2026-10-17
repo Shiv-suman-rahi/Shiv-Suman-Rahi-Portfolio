@@ -1,94 +1,58 @@
-# Contact Backend Setup
+# Separate Vercel Deployments
 
-The portfolio contact form uses an Express API and MongoDB Atlas.
+The repository contains two independent Vercel projects:
 
-## 1. Configure MongoDB
+- `frontend/` is the Vite site.
+- `backend/` is the Express API and its Vercel serverless functions.
 
-From the project folder, copy the environment template:
+Create two Vercel projects from the same Git repository. Set the **Root Directory** to the matching folder for each project. Deploy the backend first so you can use its URL in the frontend settings.
+
+## Backend project
+
+Set the Vercel Root Directory to `backend`. Use the default install/build settings; the API functions are in `backend/api/`.
+
+Add these backend environment variables in Vercel:
+
+```text
+MONGODB_URI=<your MongoDB Atlas connection string>
+ADMIN_PASSWORD=<a long, unique password>
+CLIENT_ORIGIN=<the deployed frontend origin, without a trailing slash>
+```
+
+For example, `CLIENT_ORIGIN` should be `https://your-portfolio.vercel.app`. If you use a custom domain, include that origin as well. Multiple allowed origins can be comma-separated. Optional email and WhatsApp notification variables are listed in `backend/.env.example`.
+
+After deployment, verify the API at `https://<backend-domain>/api/health`.
+
+## Frontend project
+
+Set the Vercel Root Directory to `frontend`. Vercel should detect Vite automatically.
+
+Add this frontend environment variable in Vercel:
+
+```text
+VITE_API_URL=https://<backend-domain>
+```
+
+Use the backend's origin only, without a trailing slash or `/api`. This value is embedded during the frontend build, so redeploy the frontend after changing it. The Vercel rewrite in `frontend/vercel.json` serves the SPA for client-side routes.
+
+## Local development
+
+Keep backend secrets in `backend/.env`. For a new checkout, copy `backend/.env.example` to `backend/.env` once, then replace its placeholders. Do not overwrite an existing `.env`. Start the API from the repository root:
 
 ```powershell
-Copy-Item .env.example .env
+npm --prefix backend install
+npm --prefix backend run dev
 ```
 
-Open `.env` and replace the placeholder values:
-
-```env
-MONGODB_URI=mongodb+srv://USERNAME:PASSWORD@CLUSTER.mongodb.net/portfolio?retryWrites=true&w=majority
-PORT=5000
-CLIENT_ORIGIN=http://localhost:5173
-```
-
-Keep `.env` private. It is ignored by Git.
-
-## 2. Configure the frontend
-
-Create `.env.local`:
-
-```env
-VITE_API_URL=http://localhost:5000
-```
-
-For Vercel deployment, this project exposes its Express API through explicit Node function files under `api/`, including the admin login, portfolio, and resume routes. In the Vercel project settings, configure `MONGODB_URI`, `ADMIN_PASSWORD`, and `CLIENT_ORIGIN` for the backend. Set the frontend build variable `VITE_API_URL` to the deployed site's origin, then redeploy so the URL is included in the frontend build. `CLIENT_ORIGIN` should match the deployed site origin.
-
-## 3. Start the backend
-
-Open a PowerShell terminal:
+Set `VITE_API_URL=http://localhost:5000` in `frontend/.env`, then start the frontend in another terminal:
 
 ```powershell
-cd "C:\Users\HP\OneDrive\Desktop\Shiv-Suman-Rahi-Portfolio"
-npm install
-npm run server
+npm --prefix frontend install
+npm --prefix frontend run dev
 ```
 
-The API runs at:
+The site runs at `http://localhost:5173`, and the API health check is `http://localhost:5000/api/health`.
 
-```text
-http://localhost:5000
-```
+## Contact messages
 
-Health check:
-
-```text
-http://localhost:5000/api/health
-```
-
-## 4. Start the frontend
-
-Open a second PowerShell terminal:
-
-```powershell
-cd "C:\Users\HP\OneDrive\Desktop\Shiv-Suman-Rahi-Portfolio"
-npm run dev
-```
-
-Open:
-
-```text
-http://localhost:5173
-```
-
-## 5. View submitted messages
-
-1. Sign in to [MongoDB Atlas](https://cloud.mongodb.com/).
-2. Open your MongoDB project and cluster.
-3. Select **Browse Collections**.
-4. Open the `portfolio` database.
-5. Open the `contactmessages` collection.
-
-Submitted records contain:
-
-- `name`
-- `email`
-- `message`
-- `createdAt`
-- `updatedAt`
-
-The contact API endpoint is:
-
-```text
-POST http://localhost:5000/api/contact
-```
-
-The backend validates all fields before saving them.
-
-Resume PDFs (up to 10 MB) are stored in MongoDB and remain available across server restarts and redeploys. Uploading a replacement updates the existing resume record and publishes its download link automatically.
+The contact endpoint is `POST /api/contact`. Submitted records are stored in the `portfolio.contactmessages` MongoDB collection. Resume PDFs (up to 10 MB) are stored in MongoDB so they persist across serverless invocations and redeploys.

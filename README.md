@@ -72,27 +72,17 @@ The application provides a simple interface for storing useful snippets, notes, 
 ## 📂 Project Structure
 
 ```text
-PasteApp/
-│
-├── public/
-│
-├── src/
-│   ├── components/
-│   │   ├── Navbar.jsx
-│   │   ├── Home.jsx
-│   │   ├── Paste.jsx
-│   │   └── PasteBox.jsx
-│   │
-│   ├── redux/
-│   │   ├── store.js
-│   │   └── pasteSlice.js
-│   │
-│   ├── App.jsx
-│   ├── main.jsx
-│   └── index.css
-│
-├── package.json
-├── package-lock.json
+Portfolio/
+├── backend/
+│   ├── api/
+│   ├── server/
+│   ├── package.json
+│   └── package-lock.json
+├── frontend/
+│   ├── public/
+│   ├── src/
+│   ├── package.json
+│   └── package-lock.json
 └── README.md
 ```
 
@@ -115,29 +105,17 @@ cd paste-app
 ### 3. Install Dependencies
 
 ```bash
-npm install
+npm --prefix frontend install
+npm --prefix backend install
 ```
 
-### 4. Configure the contact API
-
-The contact form uses the Express API and MongoDB Atlas. Copy `.env.example` to
-`.env`, then replace the MongoDB Atlas placeholder with a database connection
-string. Keep `.env` private; it is ignored by Git.
-
-Create a frontend environment file named `.env.local`:
-
-```text
-VITE_API_URL=http://localhost:5000
-```
-
-### 5. Start the Development Servers
+### 4. Start the Development Servers
 
 Run the API and frontend in separate terminals:
 
 ```bash
-npm run dev
-# in another terminal
-npm run server
+npm --prefix backend run dev
+npm --prefix frontend run dev
 ```
 
 The application will be available at:
@@ -146,10 +124,9 @@ The application will be available at:
 http://localhost:5173
 ```
 
-The API exposes `POST /api/contact` and `GET /api/health`. The server validates
-name, email, and message before storing contact messages in the `ContactMessage`
-MongoDB collection. Set `CLIENT_ORIGIN` to a comma-separated list of allowed
-frontend origins when deploying.
+The frontend and backend are independently deployable Vercel projects. See
+[BACKEND-SETUP.md](BACKEND-SETUP.md) for project root directories, environment
+variables, and deployment steps.
 
 ---
 

@@ -1,5 +1,5 @@
 import mongoose from 'mongoose'
-import { portfolioData } from '../../src/data/portfolioData.js'
+import { portfolioData } from '../data/portfolioData.js'
 
 const portfolioContentSchema = new mongoose.Schema(
   {

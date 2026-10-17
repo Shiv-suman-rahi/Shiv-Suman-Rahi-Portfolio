@@ -1,7 +1,7 @@
 import express from 'express'
 import PortfolioContent from '../models/PortfolioContent.js'
 import ResumeFile from '../models/ResumeFile.js'
-import { portfolioData } from '../../src/data/portfolioData.js'
+import { portfolioData } from '../data/portfolioData.js'
 
 const router = express.Router()
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD

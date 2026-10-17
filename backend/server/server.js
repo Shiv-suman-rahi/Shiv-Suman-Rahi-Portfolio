@@ -1,11 +1,14 @@
-import 'dotenv/config'
+import dotenv from 'dotenv'
 import cors from 'cors'
 import express from 'express'
 import mongoose from 'mongoose'
 import dns from 'node:dns'
+import { fileURLToPath } from 'node:url'
 
 import contactRouter from './routes/contact.js'
 import adminRouter from './routes/admin.js'
+
+dotenv.config({ path: fileURLToPath(new URL('../.env', import.meta.url)) })
 
 // DNS configuration
 dns.setServers(['8.8.8.8', '1.1.1.1'])
