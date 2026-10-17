@@ -10,7 +10,7 @@ import adminRouter from './routes/admin.js'
 
 dotenv.config({ path: fileURLToPath(new URL('../.env', import.meta.url)) })
 
-// DNS configuration
+// Use public resolvers for Atlas SRV records in restricted environments.
 dns.setServers(['8.8.8.8', '1.1.1.1'])
 
 const app = express()
@@ -61,7 +61,7 @@ app.get('/api/health', async (req, res) => {
       console.error('MongoDB health check failed:', error)
       return res.status(503).json({
         status: 'error',
-        message: 'The API database is unavailable.',
+        message: 'The API database is unavailable. Verify the backend MONGODB_URI and MongoDB Atlas network access.',
         database: 'unavailable',
       })
     }
@@ -85,7 +85,7 @@ app.use('/api', async (req, res, next) => {
     console.error('MongoDB connection error:', error)
     res.status(503).json({
       success: false,
-      message: 'The API database is unavailable.',
+      message: 'The API database is unavailable. Verify the backend MONGODB_URI and MongoDB Atlas network access.',
     })
   }
 })
@@ -132,10 +132,18 @@ export async function connectDatabase() {
     return
   }
 
-  if (mongoose.connection.readyState !== 2) {
-    databaseConnection = mongoose.connect(process.env.MONGODB_URI)
+  if (mongoose.connection.readyState === 2) {
+    await mongoose.connection.asPromise()
+    return
+  }
+
+  if (!databaseConnection) {
+    databaseConnection = mongoose.connect(process.env.MONGODB_URI, {
+      serverSelectionTimeoutMS: 8000,
+    })
       .then(() => {
         console.log('MongoDB connected successfully')
+        databaseConnection = undefined
       })
       .catch((error) => {
         databaseConnection = undefined
