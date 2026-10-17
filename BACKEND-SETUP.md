@@ -37,21 +37,23 @@ Use the backend's origin only, without a trailing slash or `/api`. This value is
 
 ## Local development
 
-Keep backend secrets in `backend/.env`. For a new checkout, copy `backend/.env.example` to `backend/.env` once, then replace its placeholders. Do not overwrite an existing `.env`. Start the API from the repository root:
+Keep backend secrets in `backend/.env`. For a new checkout, copy `backend/.env.example` to `backend/.env` once, then replace its placeholders. Do not overwrite an existing `.env`. Set `MONGODB_URI` and `ADMIN_PASSWORD`; `CLIENT_ORIGIN` must include the frontend's local origin and deployed origin(s). Start the API from the repository root:
 
 ```powershell
+Copy-Item backend\.env.example backend\.env
 npm --prefix backend install
 npm --prefix backend run dev
 ```
 
-Set `VITE_API_URL=http://localhost:5000` in `frontend/.env`, then start the frontend in another terminal:
+In another terminal, copy the frontend environment template and start the UI:
 
 ```powershell
+Copy-Item frontend\.env.example frontend\.env
 npm --prefix frontend install
 npm --prefix frontend run dev
 ```
 
-The site runs at `http://localhost:5173`, and the API health check is `http://localhost:5000/api/health`.
+Keep `VITE_API_URL=http://localhost:5000` in `frontend/.env`. The site runs at `http://localhost:5173`, and the API health check is `http://localhost:5000/api/health`.
 
 ## Contact messages
 

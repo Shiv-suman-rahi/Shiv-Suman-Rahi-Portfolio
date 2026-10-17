@@ -1,5 +1,5 @@
 {
-  "name": "react-paste-app",
+  "name": "portfolio-frontend",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -7,10 +7,7 @@
     "dev": "vite",
     "build": "vite build",
     "lint": "oxlint",
-    "preview": "vite preview",
-    "start": "node server/server.js",
-    "server": "node server/server.js",
-    "dev:server": "node --watch server/server.js"
+    "preview": "vite preview"
   },
   "dependencies": {
     "@reduxjs/toolkit": "^2.12.0",
