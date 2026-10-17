@@ -48,7 +48,25 @@ app.use(
 app.use(express.json({ limit: '20kb' }))
 
 // Health check
-app.get('/api/health', (_req, res) => {
+app.get('/api/health', async (req, res) => {
+  if (req.query.database === 'true') {
+    try {
+      await connectDatabase()
+      return res.json({
+        status: 'ok',
+        message: 'Contact API is running',
+        database: 'connected',
+      })
+    } catch (error) {
+      console.error('MongoDB health check failed:', error)
+      return res.status(503).json({
+        status: 'error',
+        message: 'The API database is unavailable.',
+        database: 'unavailable',
+      })
+    }
+  }
+
   res.json({
     status: 'ok',
     message: 'Contact API is running',

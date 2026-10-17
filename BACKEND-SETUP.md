@@ -28,10 +28,13 @@ CORS preflight requests. Localhost origins are allowed automatically when
 `CLIENT_ORIGIN` is not set. Optional email and WhatsApp notification variables
 are listed in `backend/.env.example`.
 
-After deployment, verify the API at `https://<backend-domain>/api/health`. The
-health endpoint and CORS preflight requests do not require MongoDB; contact and
-admin API calls do. If they return `503`, check `MONGODB_URI` and confirm
-MongoDB Atlas network access permits connections from Vercel.
+After deployment, verify API availability at `https://<backend-domain>/api/health`.
+Check MongoDB connectivity at
+`https://<backend-domain>/api/health?database=true`; it returns
+`database: "connected"` only after MongoDB accepts a connection. Contact and
+admin API calls also require MongoDB. If the database check or a save returns
+`503`, check `MONGODB_URI` and confirm MongoDB Atlas network access permits
+connections from Vercel.
 
 ## Frontend project
 
