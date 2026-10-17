@@ -19,15 +19,19 @@ ADMIN_PASSWORD=<a long, unique password>
 CLIENT_ORIGIN=<the deployed frontend origin, without a trailing slash>
 ```
 
-`CLIENT_ORIGIN` is the frontend's origin (not the backend URL), for example
-`https://your-portfolio.vercel.app`. If you use a custom domain, include that
-origin too. Separate multiple origins with commas. The backend checks the
-browser's `Origin` header against this allowlist and handles CORS preflight
-requests. Localhost origins are allowed automatically when `CLIENT_ORIGIN` is
-not set. Optional email and WhatsApp notification variables are listed in
-`backend/.env.example`.
+`CLIENT_ORIGIN` is the frontend's origin (not the backend URL). For the current
+frontend deployment, set it to
+`https://shiv-suman-rahi-portfolio-djr8.vercel.app`. If you use a custom
+domain, include that origin too. Separate multiple origins with commas. The
+backend checks the browser's `Origin` header against this allowlist and handles
+CORS preflight requests. Localhost origins are allowed automatically when
+`CLIENT_ORIGIN` is not set. Optional email and WhatsApp notification variables
+are listed in `backend/.env.example`.
 
-After deployment, verify the API at `https://<backend-domain>/api/health`.
+After deployment, verify the API at `https://<backend-domain>/api/health`. The
+health endpoint and CORS preflight requests do not require MongoDB; contact and
+admin API calls do. If they return `503`, check `MONGODB_URI` and confirm
+MongoDB Atlas network access permits connections from Vercel.
 
 ## Frontend project
 

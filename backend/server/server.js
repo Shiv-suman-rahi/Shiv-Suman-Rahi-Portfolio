@@ -55,6 +55,23 @@ app.get('/api/health', (_req, res) => {
   })
 })
 
+app.use('/api', async (req, res, next) => {
+  if (req.path === '/admin/login') {
+    return next()
+  }
+
+  try {
+    await connectDatabase()
+    next()
+  } catch (error) {
+    console.error('MongoDB connection error:', error)
+    res.status(503).json({
+      success: false,
+      message: 'The API database is unavailable.',
+    })
+  }
+})
+
 // Contact API
 app.use('/api/contact', contactRouter)
 
