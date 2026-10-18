@@ -1,4 +1,5 @@
 :root {
+  color-scheme: dark;
   --background: #070c18;
   --background-alt: #0a1221;
   --panel: #0e192a;
@@ -14,6 +15,7 @@
 }
 
 :root[data-theme='light'] {
+  color-scheme: light;
   --background: #f4f6fc;
   --background-alt: #edf1fa;
   --panel: #ffffff;
@@ -1365,6 +1367,323 @@ main {
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
   }
+}
+
+:root[data-theme='light'] {
+  --background: #f4f6fc;
+  --background-alt: #edf1fa;
+  --panel: #ffffff;
+  --panel-strong: #e8edf8;
+  --border: rgba(29, 44, 73, 0.14);
+  --text: #18243b;
+  --muted: #5d6e88;
+  --accent: #147caa;
+  --accent-strong: #7055d9;
+  --accent-soft: rgba(20, 124, 170, 0.09);
+  --shadow: rgba(46, 57, 93, 0.12);
+  --success: #15805d;
+  --error: #c93a4b;
+}
+
+:root[data-theme='light'] body,
+:root[data-theme='light'] .app-shell {
+  color: var(--text);
+  background:
+    radial-gradient(ellipse at 84% 7%, rgba(137, 113, 226, 0.1), transparent 34rem),
+    linear-gradient(180deg, #f9faff, var(--background));
+}
+
+:root[data-theme='light'] .site-nav::before {
+  border-color: rgba(29, 44, 73, 0.12);
+  background: rgba(250, 251, 255, 0.93);
+  box-shadow: 0 14px 36px rgba(46, 57, 93, 0.08);
+}
+
+:root[data-theme='light'] .brand,
+:root[data-theme='light'] .main-navigation {
+  color: var(--text);
+}
+
+:root[data-theme='light'] .main-navigation a {
+  color: #52617a;
+}
+
+:root[data-theme='light'] .main-navigation a:hover,
+:root[data-theme='light'] .main-navigation a.active {
+  color: var(--accent-strong);
+}
+
+:root[data-theme='light'] .theme-toggle,
+:root[data-theme='light'] .mobile-menu-button {
+  border-color: var(--border);
+  background: rgba(255, 255, 255, 0.76);
+  color: var(--text);
+}
+
+:root[data-theme='light'] .nav-admin-button {
+  border-color: var(--border);
+  background: rgba(255, 255, 255, 0.72);
+  color: var(--text);
+}
+
+:root[data-theme='light'] .hero-section {
+  border-color: var(--border);
+  background:
+    radial-gradient(ellipse at 82% 64%, rgba(247, 174, 132, 0.26), transparent 27rem),
+    radial-gradient(ellipse at 77% 16%, rgba(124, 117, 208, 0.15), transparent 25rem),
+    linear-gradient(105deg, #f8f9ff 0%, #eff3fc 52%, #eeedf8 100%);
+}
+
+:root[data-theme='light'] .hero-section::before {
+  background:
+    linear-gradient(90deg, #eff3fc 0%, rgba(239, 243, 252, 0.12) 38%, rgba(239, 243, 252, 0.04) 100%),
+    repeating-linear-gradient(90deg, transparent 0 108px, rgba(72, 91, 139, 0.07) 109px 111px),
+    linear-gradient(160deg, rgba(112, 141, 196, 0.21), rgba(232, 161, 126, 0.22) 68%, rgba(123, 141, 178, 0.18));
+}
+
+:root[data-theme='light'] .availability-badge {
+  border-color: rgba(18, 139, 111, 0.18);
+  background: rgba(25, 165, 131, 0.1);
+  color: #087553;
+}
+
+:root[data-theme='light'] .hero-section h1 {
+  color: #17243b;
+}
+
+:root[data-theme='light'] .hero-highlight {
+  background-image: linear-gradient(95deg, #17243b 0%, #34466b 52%, #7254d5 100%);
+}
+
+:root[data-theme='light'] .hero-subtitle,
+:root[data-theme='light'] .hero-intro {
+  color: #53647e;
+}
+
+:root[data-theme='light'] .button-secondary {
+  border-color: rgba(52, 72, 111, 0.24);
+  background: rgba(255, 255, 255, 0.76);
+  color: #283651;
+}
+
+:root[data-theme='light'] .social-link {
+  border-color: rgba(52, 72, 111, 0.14);
+  background: rgba(255, 255, 255, 0.7);
+  color: #52617a;
+}
+
+:root[data-theme='light'] .tech-stack span {
+  border-color: rgba(52, 72, 111, 0.14);
+  background: rgba(255, 255, 255, 0.7);
+  color: #53647e;
+}
+
+:root[data-theme='light'] .floating-note {
+  border-color: rgba(52, 72, 111, 0.16);
+  background: rgba(250, 251, 255, 0.92);
+  color: #34425c;
+  box-shadow: 0 12px 28px rgba(46, 57, 93, 0.12);
+}
+
+:root[data-theme='light'] .section-alt {
+  border-color: rgba(29, 44, 73, 0.08);
+  background: linear-gradient(110deg, rgba(239, 243, 251, 0.95), rgba(247, 248, 253, 0.98));
+}
+
+:root[data-theme='light'] .section-heading p {
+  color: var(--muted);
+}
+
+:root[data-theme='light'] .about-note {
+  border-color: rgba(112, 85, 217, 0.2);
+  background: rgba(250, 251, 255, 0.96);
+  box-shadow: 0 12px 26px rgba(46, 57, 93, 0.12);
+}
+
+:root[data-theme='light'] .about-note strong,
+:root[data-theme='light'] .about-fact strong {
+  color: var(--text);
+}
+
+:root[data-theme='light'] .about-fact {
+  border-color: var(--border);
+  background: rgba(255, 255, 255, 0.78);
+}
+
+:root[data-theme='light'] .skill-card,
+:root[data-theme='light'] .timeline-content,
+:root[data-theme='light'] .cert-card,
+:root[data-theme='light'] .leadership-card {
+  border-color: var(--border);
+  background: linear-gradient(145deg, rgba(255, 255, 255, 0.96), rgba(242, 245, 251, 0.96));
+  box-shadow: 0 12px 30px rgba(46, 57, 93, 0.06);
+}
+
+:root[data-theme='light'] .skill-card h3,
+:root[data-theme='light'] .timeline-content h3,
+:root[data-theme='light'] .cert-card h3,
+:root[data-theme='light'] .leadership-card h3,
+:root[data-theme='light'] .project-card h3 {
+  color: var(--text);
+}
+
+:root[data-theme='light'] .skill-card p,
+:root[data-theme='light'] .timeline-description,
+:root[data-theme='light'] .timeline-company,
+:root[data-theme='light'] .timeline-university,
+:root[data-theme='light'] .timeline-detail,
+:root[data-theme='light'] .cert-card p,
+:root[data-theme='light'] .cert-card small,
+:root[data-theme='light'] .cert-card span,
+:root[data-theme='light'] .leadership-org,
+:root[data-theme='light'] .leadership-card li {
+  color: var(--muted);
+}
+
+:root[data-theme='light'] .learning-block {
+  border-color: var(--border);
+  background: rgba(255, 255, 255, 0.82);
+}
+
+:root[data-theme='light'] .chip-list span {
+  border-color: rgba(52, 72, 111, 0.12);
+  background: rgba(226, 232, 244, 0.68);
+  color: #52617a;
+}
+
+:root[data-theme='light'] .project-card {
+  border-color: var(--border);
+  background: linear-gradient(160deg, #ffffff, #f1f4fa);
+  box-shadow: 0 16px 32px rgba(46, 57, 93, 0.09);
+}
+
+:root[data-theme='light'] .project-meta {
+  color: #667590;
+}
+
+:root[data-theme='light'] .project-visual span {
+  border-color: rgba(255, 255, 255, 0.48);
+  background: rgba(18, 29, 49, 0.5);
+}
+
+:root[data-theme='light'] .project-actions a,
+:root[data-theme='light'] .project-actions button,
+:root[data-theme='light'] .modal-links a {
+  border-color: rgba(29, 44, 73, 0.14);
+  background: rgba(255, 255, 255, 0.78);
+  color: #176b91;
+}
+
+:root[data-theme='light'] .project-feature-list {
+  color: #53647e;
+}
+
+:root[data-theme='light'] .resume-card {
+  border-color: var(--border);
+  background:
+    radial-gradient(ellipse at 88% 10%, rgba(137, 94, 238, 0.09), transparent 18rem),
+    linear-gradient(130deg, rgba(255, 255, 255, 0.97), rgba(239, 243, 251, 0.97));
+  box-shadow: 0 16px 38px rgba(46, 57, 93, 0.08);
+}
+
+:root[data-theme='light'] .resume-card p {
+  color: var(--muted);
+}
+
+:root[data-theme='light'] .contact-card,
+:root[data-theme='light'] .contact-form {
+  border-color: var(--border);
+  background: linear-gradient(145deg, rgba(255, 255, 255, 0.97), rgba(242, 245, 251, 0.97));
+  box-shadow: 0 16px 34px rgba(46, 57, 93, 0.07);
+}
+
+:root[data-theme='light'] .contact-links a {
+  border-color: rgba(29, 44, 73, 0.12);
+  background: rgba(240, 243, 249, 0.8);
+  color: #465873;
+}
+
+:root[data-theme='light'] .contact-form label {
+  color: #52617a;
+}
+
+:root[data-theme='light'] .contact-form input,
+:root[data-theme='light'] .contact-form textarea {
+  border-color: rgba(29, 44, 73, 0.16);
+  background: #fff;
+  color: var(--text);
+}
+
+:root[data-theme='light'] .contact-form input::placeholder,
+:root[data-theme='light'] .contact-form textarea::placeholder {
+  color: #8290a6;
+}
+
+:root[data-theme='light'] .contact-form input:focus,
+:root[data-theme='light'] .contact-form textarea:focus {
+  border-color: rgba(20, 124, 170, 0.6);
+  box-shadow: 0 0 0 4px rgba(20, 124, 170, 0.1);
+}
+
+:root[data-theme='light'] .site-footer {
+  border-color: var(--border);
+}
+
+:root[data-theme='light'] .footer-role,
+:root[data-theme='light'] .site-footer p,
+:root[data-theme='light'] .footer-links {
+  color: var(--muted);
+}
+
+:root[data-theme='light'] .project-modal {
+  border-color: var(--border);
+  background: var(--background);
+}
+
+:root[data-theme='light'] .project-modal-body p,
+:root[data-theme='light'] .project-modal-body li {
+  color: var(--muted);
+}
+
+:root[data-theme='light'] .modal-close {
+  border-color: var(--border);
+  color: var(--text);
+}
+
+:root[data-theme='light'] .portfolio-load-warning {
+  color: #a6293a;
+}
+
+:root[data-theme='light'] .admin-card,
+:root[data-theme='light'] .admin-card-block {
+  border-color: var(--border);
+  background: rgba(255, 255, 255, 0.92);
+  color: var(--text);
+  box-shadow: 0 16px 38px rgba(46, 57, 93, 0.08);
+}
+
+:root[data-theme='light'] .admin-card label,
+:root[data-theme='light'] .admin-hint {
+  color: var(--muted);
+}
+
+:root[data-theme='light'] .admin-card input,
+:root[data-theme='light'] .admin-card textarea {
+  border-color: var(--border);
+  background: #fff;
+  color: var(--text);
+}
+
+:root[data-theme='light'] .admin-tabs button {
+  border-color: var(--border);
+  background: #fff;
+  color: var(--text);
+}
+
+:root[data-theme='light'] .admin-tabs button.active {
+  border-color: rgba(20, 124, 170, 0.32);
+  background: var(--accent-soft);
+  color: var(--accent);
 }
 
 body {

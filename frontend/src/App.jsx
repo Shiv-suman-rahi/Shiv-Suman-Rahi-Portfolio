@@ -104,7 +104,13 @@ function Navbar({ activeSection, darkMode, onToggleTheme, onOpenAdmin, portfolio
           </a>
         ))}
 
-        <button className="theme-toggle" type="button" onClick={onToggleTheme} aria-label="Toggle color theme">
+        <button
+          className="theme-toggle"
+          type="button"
+          onClick={onToggleTheme}
+          aria-label={darkMode ? 'Switch to light theme' : 'Switch to dark theme'}
+          aria-pressed={!darkMode}
+        >
           {darkMode ? <FiSun /> : <FiMoon />}
         </button>
 
