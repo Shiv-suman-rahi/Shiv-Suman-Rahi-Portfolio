@@ -59,11 +59,8 @@ const loadPortfolio = async (signal) => {
 const navItems = [
   { id: 'home', label: 'Home' },
   { id: 'about', label: 'About' },
-  { id: 'skills', label: 'Skills' },
   { id: 'projects', label: 'Projects' },
-  { id: 'experience', label: 'Experience' },
-  { id: 'education', label: 'Education' },
-  { id: 'leadership', label: 'Leadership' },
+  { id: 'skills', label: 'Skills' },
   { id: 'contact', label: 'Contact' },
 ];
 
@@ -137,16 +134,15 @@ function Hero({ portfolio }) {
           transition={{ duration: 0.6 }}
         >
           <div className="availability-badge">
-            <span /> Open to opportunities
+            <span /> {hero.title}
           </div>
 
-          <p className="hero-greeting">{hero.greeting}</p>
-
           <h1>
-            <span className="hero-highlight">{hero.title}</span>
-            <small>{hero.subtitle}</small>
+            {hero.greeting.replace(portfolio.name, '').trim() || 'Hi, I’m'}
+            <span className="hero-highlight">{portfolio.name}</span>
           </h1>
 
+          <p className="hero-subtitle">{hero.subtitle}</p>
           <p className="hero-intro">{hero.intro}</p>
 
           <div className="hero-actions">
@@ -182,6 +178,12 @@ function Hero({ portfolio }) {
           animate={prefersReducedMotion ? undefined : { opacity: 1, scale: 1 }}
           transition={{ duration: 0.7, delay: 0.15 }}
         >
+          <div className="workspace-scene" aria-hidden="true">
+            <div className="workspace-window" />
+            <div className="workspace-shelf" />
+            <div className="workspace-plant"><span /><span /><span /></div>
+            <div className="workspace-desk" />
+          </div>
           <div className="code-card">
             <div className="code-card-header">
               <span />
@@ -228,23 +230,38 @@ function About({ portfolio }) {
 
   return (
     <section id="about" className="section-shell">
-      <SectionHeading eyebrow="01 / About me" title={about.title} description={about.description} />
-
       <div className="about-grid">
-        <div className="story-card">
-          {about.paragraphs.map((paragraph) => (
-            <p key={paragraph}>{paragraph}</p>
-          ))}
+        <div className="about-visual" role="img" aria-label={`Stylized profile illustration for ${portfolio.name}`}>
+          <div className="about-portrait">
+            <span className="portrait-monogram">SSR</span>
+            <span className="portrait-orbit orbit-one" />
+            <span className="portrait-orbit orbit-two" />
+            <span className="portrait-caption">{portfolio.name}</span>
+          </div>
+          <div className="about-note">
+            <span>Currently</span>
+            <strong>{portfolio.degree}</strong>
+          </div>
         </div>
 
-        <div className="details-card">
-          <div className="card-label">Profile details</div>
-          {about.details.map((detail) => (
-            <div className="detail-row" key={detail.label}>
-              <span>{detail.label}</span>
-              <strong>{detail.value}</strong>
-            </div>
-          ))}
+        <div className="about-content">
+          <SectionHeading eyebrow="About me" title={`I’m ${portfolio.name}`} description={about.description} />
+          <div className="story-card">
+            {about.paragraphs.map((paragraph) => (
+              <p key={paragraph}>{paragraph}</p>
+            ))}
+          </div>
+          <div className="about-facts">
+            {about.details.slice(0, 3).map((detail) => (
+              <div className="about-fact" key={detail.label}>
+                <span>{detail.label}</span>
+                <strong>{detail.value}</strong>
+              </div>
+            ))}
+            <a className="about-more" href="#education" aria-label="Read more about my education">
+              <FiArrowRight />
+            </a>
+          </div>
         </div>
       </div>
     </section>
@@ -257,9 +274,9 @@ function Skills({ portfolio }) {
   return (
     <section id="skills" className="section-shell section-alt">
       <SectionHeading
-        eyebrow="02 / Technical skills"
-        title="A practical toolkit for modern development."
-        description="I focus on technologies that help me build reliable interfaces, structured APIs, and full-stack applications with a strong foundation in problem solving."
+        eyebrow="My skills"
+        title="Technologies & tools"
+        description="The tools I use to turn ideas into responsive, practical web experiences."
       />
 
       <div className="skill-grid">
@@ -368,9 +385,9 @@ function Projects({ portfolio }) {
   return (
     <section id="projects" className="section-shell section-alt">
       <SectionHeading
-        eyebrow="03 / Projects"
-        title="Project work that shows practical development skills."
-        description="Each project demonstrates a focused approach to product thinking, implementation, and clean front-end interaction design."
+        eyebrow="My projects"
+        title="Featured projects"
+        description="A selection of the projects I’ve built, with each one helping me learn, build, and grow."
       />
 
       <div className="project-grid">
@@ -426,9 +443,9 @@ function Experience({ portfolio }) {
   return (
     <section id="experience" className="section-shell">
       <SectionHeading
-        eyebrow="04 / Training & experience"
-        title="Building skills through projects, training, and practical web work."
-        description="The timeline below highlights my learning path and the technical foundations I am strengthening as I prepare for full-stack development opportunities."
+        eyebrow="Training & experience"
+        title="Learning by doing."
+        description="Practical training and project work help me keep growing as a developer."
       />
 
       <div className="timeline">
@@ -456,7 +473,7 @@ function Experience({ portfolio }) {
 function Education({ portfolio }) {
   return (
     <section id="education" className="section-shell section-alt">
-      <SectionHeading eyebrow="05 / Education" title="Academic foundation with a focus on technology and problem solving." description="My coursework and learning path are centered on software engineering, data structures, databases, and modern computing concepts." />
+      <SectionHeading eyebrow="Education & experience" title="Journey" description="My academic path is grounded in computer science, software engineering, and continuous learning." />
 
       <div className="timeline timeline-compact">
         {portfolio.education.map((item) => (
@@ -770,8 +787,8 @@ function App() {
         <About portfolio={portfolio} />
         <Skills portfolio={portfolio} />
         <Projects portfolio={portfolio} />
-        <Experience portfolio={portfolio} />
         <Education portfolio={portfolio} />
+        <Experience portfolio={portfolio} />
         <Certifications portfolio={portfolio} />
         <Leadership portfolio={portfolio} />
         <ResumeSection portfolio={portfolio} />
