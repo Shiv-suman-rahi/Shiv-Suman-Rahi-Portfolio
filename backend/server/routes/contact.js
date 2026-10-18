@@ -7,6 +7,14 @@ env.config();
 
 const router = express.Router()
 
+const escapeHtml = (value) => value.replace(/[&<>"']/g, (character) => ({
+  '&': '&amp;',
+  '<': '&lt;',
+  '>': '&gt;',
+  '"': '&quot;',
+  "'": '&#39;',
+}[character]))
+
 const sendEmailNotification = async ({ name, email, message }) => {
   const smtpUser = process.env.SMTP_USER
   const smtpPass = process.env.SMTP_PASS
@@ -33,10 +41,10 @@ const sendEmailNotification = async ({ name, email, message }) => {
     text: `Name: ${name}\nEmail: ${email}\n\nMessage:\n${message}`,
     html: `
       <h3>New portfolio contact message</h3>
-      <p><strong>Name:</strong> ${name}</p>
-      <p><strong>Email:</strong> ${email}</p>
+      <p><strong>Name:</strong> ${escapeHtml(name)}</p>
+      <p><strong>Email:</strong> ${escapeHtml(email)}</p>
       <p><strong>Message:</strong></p>
-      <p>${message.replace(/\n/g, '<br />')}</p>
+      <p>${escapeHtml(message).replace(/\n/g, '<br />')}</p>
     `,
   })
 }
@@ -63,20 +71,37 @@ const sendWhatsAppNotification = async ({ name, email, message }) => {
 // POST /api/contact
 router.post('/', async (req, res) => {
   try {
-    const { name, email, message } = req.body
+    const { name, email, message } = req.body || {}
 
-    // Validation
-    if (!name || !email || !message) {
+    if (
+      typeof name !== 'string' ||
+      typeof email !== 'string' ||
+      typeof message !== 'string' ||
+      !name.trim() ||
+      !email.trim() ||
+      !message.trim()
+    ) {
       return res.status(400).json({
         success: false,
         message: 'Name, email and message are required.',
       })
     }
 
+    const cleanName = name.trim()
+    const cleanEmail = email.trim()
+    const cleanMessage = message.trim()
+
+    if (cleanName.length > 100 || cleanEmail.length > 150 || cleanMessage.length > 2000) {
+      return res.status(400).json({
+        success: false,
+        message: 'Name, email, or message exceeds the allowed length.',
+      })
+    }
+
     // Basic email validation
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
-    if (!emailRegex.test(email)) {
+    if (!emailRegex.test(cleanEmail)) {
       return res.status(400).json({
         success: false,
         message: 'Please enter a valid email address.',
@@ -85,14 +110,14 @@ router.post('/', async (req, res) => {
 
     // Save message to MongoDB
     const contact = await ContactMessage.create({
-      name,
-      email,
-      message,
+      name: cleanName,
+      email: cleanEmail,
+      message: cleanMessage,
     })
 
     const notificationResults = await Promise.allSettled([
-      sendEmailNotification({ name, email, message }),
-      sendWhatsAppNotification({ name, email, message }),
+      sendEmailNotification({ name: cleanName, email: cleanEmail, message: cleanMessage }),
+      sendWhatsAppNotification({ name: cleanName, email: cleanEmail, message: cleanMessage }),
     ])
 
     notificationResults.forEach((result, index) => {

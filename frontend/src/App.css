@@ -82,6 +82,17 @@ a {
   background: transparent;
 }
 
+.portfolio-load-warning {
+  width: min(1180px, calc(100% - 40px));
+  margin: 14px auto 0;
+  padding: 12px 16px;
+  border: 1px solid var(--error);
+  border-radius: 12px;
+  background: rgba(248, 113, 113, 0.08);
+  color: var(--error);
+  line-height: 1.5;
+}
+
 main {
   width: 100%;
 }
@@ -329,6 +340,11 @@ main {
   background: linear-gradient(135deg, var(--accent), var(--accent-strong));
   color: #07111f;
   box-shadow: 0 12px 28px rgba(31, 184, 165, 0.25);
+}
+
+.button:disabled {
+  cursor: wait;
+  opacity: 0.75;
 }
 
 .button-secondary {
@@ -1028,6 +1044,10 @@ main {
 
 .form-note.success {
   color: var(--success);
+}
+
+.form-note.loading {
+  color: var(--muted);
 }
 
 .form-note.error {

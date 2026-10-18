@@ -1,4 +1,4 @@
-﻿import { useEffect, useState } from 'react';
+import { lazy, Suspense, useEffect, useState } from 'react';
 import { motion, useReducedMotion } from 'framer-motion';
 import {
   FiArrowRight,
@@ -23,8 +23,9 @@ import {
 import { SiLeetcode } from 'react-icons/si';
 import { apiUrl, parseApiResponse, resolveApiUrl } from './api';
 import { portfolioData as defaultPortfolioData } from './data/portfolioData';
-import { AdminPanel } from './components/AdminPanel';
 import './App.css';
+
+const AdminPanel = lazy(() => import('./components/AdminPanel').then(({ AdminPanel }) => ({ default: AdminPanel })));
 
 const normalizePortfolio = (data = defaultPortfolioData) => ({
   ...defaultPortfolioData,
@@ -39,6 +40,21 @@ const normalizePortfolio = (data = defaultPortfolioData) => ({
   certifications: Array.isArray(data?.certifications) ? data.certifications : defaultPortfolioData.certifications,
   leadership: Array.isArray(data?.leadership) ? data.leadership : defaultPortfolioData.leadership,
 });
+
+const loadPortfolio = async (signal) => {
+  const response = await fetch(apiUrl('/api/admin/portfolio'), { signal });
+  const data = await parseApiResponse(response);
+
+  if (!response.ok) {
+    throw new Error(data.message || 'Unable to load published portfolio content.');
+  }
+
+  if (!data?.data || typeof data.data !== 'object') {
+    throw new Error('The API response did not include portfolio content.');
+  }
+
+  return normalizePortfolio(data.data);
+};
 
 const navItems = [
   { id: 'home', label: 'Home' },
@@ -540,6 +556,12 @@ function Contact({ portfolio }) {
       return;
     }
 
+    if (name.length > 100 || email.length > 150 || text.length > 2000) {
+      setStatus('error');
+      setMessage('Name, email, or message exceeds the allowed length.');
+      return;
+    }
+
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
       setStatus('error');
@@ -603,25 +625,25 @@ function Contact({ portfolio }) {
         <form className="contact-form" onSubmit={handleSubmit} noValidate>
           <label>
             Name
-            <input type="text" name="name" placeholder="Your name" required />
+            <input type="text" name="name" placeholder="Your name" maxLength={100} required />
           </label>
 
           <label>
             Email
-            <input type="email" name="email" placeholder="you@example.com" required />
+            <input type="email" name="email" placeholder="you@example.com" maxLength={150} required />
           </label>
 
           <label>
             Message
-            <textarea name="message" rows="5" placeholder="Tell me about your project or opportunity" required />
+            <textarea name="message" rows="5" placeholder="Tell me about your project or opportunity" maxLength={2000} required />
           </label>
 
-          <button className="button button-primary" type="submit">
-            <FiSend /> Send Message
+          <button className="button button-primary" type="submit" disabled={status === 'loading'}>
+            <FiSend /> {status === 'loading' ? 'Sending...' : 'Send Message'}
           </button>
 
           {message && (
-            <p className={`form-note ${status === 'error' ? 'error' : 'success'}`} role={status === 'error' ? 'alert' : 'status'}>
+            <p className={`form-note ${status}`} role={status === 'error' ? 'alert' : 'status'}>
               {message}
             </p>
           )}
@@ -651,24 +673,32 @@ function App() {
   const [portfolio, setPortfolio] = useState(() => normalizePortfolio(defaultPortfolioData));
   const [activeSection, setActiveSection] = useState('home');
   const [darkMode, setDarkMode] = useState(true);
+  const [portfolioLoadError, setPortfolioLoadError] = useState('');
   const [showAdmin, setShowAdmin] = useState(() => new URLSearchParams(window.location.search).get('admin') === 'true');
 
   useEffect(() => {
     const controller = new AbortController();
 
-    fetch(apiUrl('/api/admin/portfolio'), { signal: controller.signal })
-      .then((response) => response.ok ? parseApiResponse(response) : Promise.reject(new Error('Unable to load content')))
+    loadPortfolio(controller.signal)
       .then((data) => {
-        if (data?.data) {
-          setPortfolio(normalizePortfolio(data.data));
-        }
+        setPortfolio(data);
+        setPortfolioLoadError('');
       })
-      .catch(() => {
-        setPortfolio(normalizePortfolio(defaultPortfolioData));
+      .catch((error) => {
+        if (error.name !== 'AbortError') {
+          setPortfolioLoadError(error.message || 'Unable to load published portfolio content.');
+        }
       });
 
     return () => controller.abort();
   }, []);
+
+  const reloadPortfolio = async () => {
+    const data = await loadPortfolio();
+    setPortfolio(data);
+    setPortfolioLoadError('');
+    return data;
+  };
 
   useEffect(() => {
     const sectionNodes = navItems.map((item) => document.getElementById(item.id)).filter(Boolean);
@@ -706,12 +736,28 @@ function App() {
   }, []);
 
   if (showAdmin) {
-    return <AdminPanel portfolio={portfolio} setPortfolio={setPortfolio} onClose={() => setShowAdmin(false)} />;
+    return (
+      <Suspense fallback={<main className="section-shell" role="status">Loading admin panel...</main>}>
+        <AdminPanel
+          portfolio={portfolio}
+          setPortfolio={setPortfolio}
+          portfolioLoadError={portfolioLoadError}
+          onReloadPortfolio={reloadPortfolio}
+          onClose={() => setShowAdmin(false)}
+        />
+      </Suspense>
+    );
   }
 
   return (
     <div className="app-shell">
       <div className="scroll-progress" aria-hidden="true" />
+      {portfolioLoadError && (
+        <p className="portfolio-load-warning" role="alert">
+          Unable to load the published portfolio from the database: {portfolioLoadError}
+          {' '}Showing the built-in portfolio content instead.
+        </p>
+      )}
       <Navbar
         activeSection={activeSection}
         darkMode={darkMode}

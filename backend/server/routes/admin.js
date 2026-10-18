@@ -1,4 +1,5 @@
 import express from 'express'
+import mongoose from 'mongoose'
 import PortfolioContent from '../models/PortfolioContent.js'
 import ResumeFile from '../models/ResumeFile.js'
 import { portfolioData } from '../data/portfolioData.js'
@@ -43,16 +44,10 @@ router.post('/resume', express.raw({ type: ['application/pdf', 'application/octe
       { new: true, upsert: true, setDefaultsOnInsert: true }
     )
 
-    const portfolio = await PortfolioContent.findOne()
-    if (portfolio) {
-      portfolio.content = { ...portfolio.content, resumeUrl: '/api/admin/resume' }
-      portfolio.markModified('content')
-      await portfolio.save()
-    } else {
-      await PortfolioContent.create({
-        content: { ...getPortfolioSeed(), resumeUrl: '/api/admin/resume' },
-      })
-    }
+    const portfolio = await ensurePortfolio()
+    portfolio.content = { ...portfolio.content, resumeUrl: '/api/admin/resume' }
+    portfolio.markModified('content')
+    await portfolio.save()
 
     return res.json({ success: true, resumeUrl: '/api/admin/resume' })
   } catch (error) {
@@ -72,18 +67,34 @@ const getPortfolioSeed = () => ({
   leadership: Array.isArray(portfolioData.leadership) ? portfolioData.leadership : [],
 })
 
-const ensurePortfolio = async () => {
-  const existing = await PortfolioContent.findOne()
+const PORTFOLIO_DOCUMENT_ID = new mongoose.Types.ObjectId('000000000000000000000001')
 
-  if (existing) {
-    return existing.content
+const ensurePortfolio = async () => {
+  const current = await PortfolioContent.findById(PORTFOLIO_DOCUMENT_ID)
+
+  if (current) {
+    return current
   }
 
-  const created = await PortfolioContent.create({
-    content: getPortfolioSeed(),
-  })
+  const existing = await PortfolioContent.findOne().sort({ updatedAt: -1, _id: -1 })
 
-  return created.content
+  try {
+    return await PortfolioContent.create({
+      _id: PORTFOLIO_DOCUMENT_ID,
+      content: existing?.content || getPortfolioSeed(),
+    })
+  } catch (error) {
+    if (error.code !== 11000) {
+      throw error
+    }
+
+    const concurrentInsert = await PortfolioContent.findById(PORTFOLIO_DOCUMENT_ID)
+    if (!concurrentInsert) {
+      throw error
+    }
+
+    return concurrentInsert
+  }
 }
 
 router.post('/login', (req, res) => {
@@ -104,11 +115,11 @@ router.post('/login', (req, res) => {
 
 router.get('/portfolio', async (_req, res) => {
   try {
-    const content = await ensurePortfolio()
+    const portfolio = await ensurePortfolio()
 
     return res.json({
       success: true,
-      data: content,
+      data: portfolio.content,
     })
   } catch (error) {
     console.error('Load portfolio content failed:', error)
@@ -158,10 +169,11 @@ router.put('/portfolio', async (req, res) => {
       leadership: Array.isArray(data.leadership) ? data.leadership : getPortfolioSeed().leadership,
     }
 
-    const saved = await PortfolioContent.findOneAndUpdate(
-      {},
+    await ensurePortfolio()
+    const saved = await PortfolioContent.findByIdAndUpdate(
+      PORTFOLIO_DOCUMENT_ID,
       { content: payload },
-      { new: true, upsert: true, setDefaultsOnInsert: true }
+      { new: true, runValidators: true }
     )
 
     return res.json({

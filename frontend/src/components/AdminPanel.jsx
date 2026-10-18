@@ -25,11 +25,12 @@ const textToList = (value) => value.split(',').map((item) => item.trim()).filter
 
 const tabs = ['basic', 'hero', 'about', 'social', 'skills', 'projects', 'experience', 'education', 'certifications', 'leadership'];
 
-export function AdminPanel({ portfolio, setPortfolio, onClose }) {
+export function AdminPanel({ portfolio, setPortfolio, portfolioLoadError, onReloadPortfolio, onClose }) {
   const [password, setPassword] = useState('');
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [status, setStatus] = useState('');
   const [isSaving, setIsSaving] = useState(false);
+  const [isReloadingPortfolio, setIsReloadingPortfolio] = useState(false);
   const [isUploadingResume, setIsUploadingResume] = useState(false);
   const [resumeFile, setResumeFile] = useState(null);
   const [activeTab, setActiveTab] = useState('basic');
@@ -169,6 +170,19 @@ export function AdminPanel({ portfolio, setPortfolio, onClose }) {
       setStatus(error.message || 'Unable to save the portfolio right now.');
     } finally {
       setIsSaving(false);
+    }
+  };
+
+  const handleReloadPortfolio = async () => {
+    try {
+      setIsReloadingPortfolio(true);
+      const currentPortfolio = await onReloadPortfolio();
+      setDraft(cloneData(currentPortfolio));
+      setStatus('Portfolio data reloaded successfully.');
+    } catch (error) {
+      setStatus(error.message || 'Unable to reload portfolio data.');
+    } finally {
+      setIsReloadingPortfolio(false);
     }
   };
 
@@ -527,6 +541,12 @@ export function AdminPanel({ portfolio, setPortfolio, onClose }) {
         </button>
       </div>
 
+      {portfolioLoadError && (
+        <p className="form-note error" role="alert">
+          Published portfolio data could not be loaded: {portfolioLoadError}. Reload from the database before saving.
+        </p>
+      )}
+
       {!isLoggedIn ? (
         <form className="admin-card" onSubmit={handleLogin}>
           <label>
@@ -563,10 +583,20 @@ export function AdminPanel({ portfolio, setPortfolio, onClose }) {
           </div>
 
           <div className="admin-actions">
-            <button type="button" className="button button-secondary" onClick={() => setDraft(cloneData(portfolio))}>
-              Reload current data
+            <button
+              type="button"
+              className="button button-secondary"
+              onClick={handleReloadPortfolio}
+              disabled={isReloadingPortfolio}
+            >
+              {isReloadingPortfolio ? 'Reloading...' : 'Reload current data'}
             </button>
-            <button type="button" className="button button-primary" onClick={handleSave} disabled={isSaving}>
+            <button
+              type="button"
+              className="button button-primary"
+              onClick={handleSave}
+              disabled={isSaving || Boolean(portfolioLoadError)}
+            >
               {isSaving ? 'Saving...' : 'Save portfolio data'}
             </button>
           </div>

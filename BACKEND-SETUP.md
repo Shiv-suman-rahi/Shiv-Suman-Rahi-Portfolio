@@ -32,13 +32,16 @@ After deployment, verify API availability at `https://<backend-domain>/api/healt
 Check MongoDB connectivity at
 `https://<backend-domain>/api/health?database=true`; it returns
 `database: "connected"` only after MongoDB accepts a connection. Contact and
-admin API calls also require MongoDB. If the database check or a save returns
-`503`, check `MONGODB_URI` and confirm MongoDB Atlas network access permits
-connections from the backend's Vercel deployment. Vercel serverless outbound
-IPs may vary; use a supported static egress option and allowlist those IPs in
-Atlas, or configure Atlas access appropriately for your deployment and use a
-dedicated database user with only the required permissions. Do not put
-database credentials in frontend environment variables.
+admin API calls also require MongoDB. Contact messages and editable portfolio
+content are stored in the backend's MongoDB database; admin saves update the
+same portfolio record that the public homepage reads. If the database check or
+a save returns `503`, check `MONGODB_URI` and confirm MongoDB Atlas network
+access permits connections from the backend's Vercel deployment. Vercel
+serverless outbound IPs may vary; use a supported static egress option and
+allowlist those IPs in Atlas, or configure Atlas access appropriately for your
+deployment and use a dedicated database user with only the required
+permissions. Do not put database credentials in frontend environment
+variables.
 
 ## Frontend project
 
